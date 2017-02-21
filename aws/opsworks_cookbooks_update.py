@@ -74,7 +74,7 @@ def main():
     os.unlink(artifact_name)
     
     ops_client = Opsworks()
-    ops_client.stack_update(STACK_ID,COOKBOOKS_BUCKET, artifact_name)
+    ops_client.stack_update(STACK_ID, COOKBOOKS_BUCKET, artifact_name)
     ops_client.stack_update_cookbooks(STACK_ID)
 
     if RUN_SETUP:
