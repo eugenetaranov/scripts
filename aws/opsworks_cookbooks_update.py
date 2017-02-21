@@ -11,8 +11,8 @@ import os, boto3, subprocess
 from time import sleep
 
 
-COOKBOOKS_BUCKET = '427985443494-opsworks'
-STACK_ID = '79a167e6-3e71-43d0-89e7-0c9de1bdd2b7'
+COOKBOOKS_BUCKET = ''
+STACK_ID = ''
 RUN_SETUP = True
 
 
