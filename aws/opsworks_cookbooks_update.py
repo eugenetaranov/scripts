@@ -50,6 +50,7 @@ class Opsworks(object):
         while n < 10:
             if self.conn.describe_deployments(DeploymentIds=[res['DeploymentId']])['Deployments'][0]['Status'] == 'successful':
                 return
+                
             sleep(10)
             n = n + 1
 
@@ -62,6 +63,7 @@ class Opsworks(object):
         while n < 10:
             if self.conn.describe_deployments(DeploymentIds=[res['DeploymentId']])['Deployments'][0]['Status'] == 'successful':
                 return
+
             sleep(10)
             n = n + 1
 
@@ -72,7 +74,7 @@ def main():
     artifact_name = cookbook_build()
     artifact_s3_upload(artifact_name, COOKBOOKS_BUCKET)
     os.unlink(artifact_name)
-    
+
     ops_client = Opsworks()
     ops_client.stack_update(STACK_ID, COOKBOOKS_BUCKET, artifact_name)
     ops_client.stack_update_cookbooks(STACK_ID)
