@@ -15,3 +15,5 @@ s3_compress_logs.py - compresses ELB access logs stored in S3
 mongo_copy.py - restores mongo data from snapshot, attaches replicaset, reconfigures (prod->stage mongo migration)
 
 eip_check.py - monitors and migrates elastic IP to the other tagged instance
+
+awshosts.py - prints host tag['Name'], instance id, private ip address
