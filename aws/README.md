@@ -17,3 +17,5 @@ mongo_copy.py - restores mongo data from snapshot, attaches replicaset, reconfig
 eip_check.py - monitors and migrates elastic IP to the other tagged instance
 
 awshosts.py - prints host tag['Name'], instance id, private ip address
+
+get_sts_tokens_mfa.py - generates temporary AWS access keys with AWS STS given permanent AWS access keys and MFA device id.
