@@ -16,7 +16,7 @@ def parseargs():
         "--cache",
         required=False,
         default="~/.cache/ssm_search",
-        help="Cache path",
+        help="Cache path, using by default ~/.cache/ssm_search",
     )
     p.add_argument("-p", "--parameter", required=False, help="Parameter name")
     p.add_argument("-l", "--list", action="store_true", help="List all parameters")
