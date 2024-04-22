@@ -2,7 +2,6 @@
 
 import boto3
 import botocore
-import sys
 from diskcache import Cache
 from argparse import ArgumentParser
 
@@ -12,11 +11,17 @@ BOTO3_CONFIG = botocore.config.Config(retries=dict(max_attempts=30))
 
 def parseargs():
     p = ArgumentParser()
-    p.add_argument("--cache", required=False, default="~/.cache/ssm_search", help="Cache path")
-    p.add_argument("--parameter", required=False, help="Parameter name")
-    p.add_argument("--list", action="store_true", help="List all parameters")
-    p.add_argument("--reset", action="store_true", help="Reset cache")
-    p.add_argument("--search", nargs="*", help="Search keywords")
+    p.add_argument(
+        "-c",
+        "--cache",
+        required=False,
+        default="~/.cache/ssm_search",
+        help="Cache path",
+    )
+    p.add_argument("-p", "--parameter", required=False, help="Parameter name")
+    p.add_argument("-l", "--list", action="store_true", help="List all parameters")
+    p.add_argument("-r", "--reset", action="store_true", help="Reset cache")
+    p.add_argument("-s", "--search", nargs="*", help="Search keywords")
     return vars(p.parse_args())
 
 
@@ -53,7 +58,9 @@ class SsmClient:
             yield p
 
     def get_parameter(self, name: str) -> str:
-        return self.client.get_parameter(Name=name, WithDecryption=True)["Parameter"]["Value"]
+        return self.client.get_parameter(Name=name, WithDecryption=True)["Parameter"][
+            "Value"
+        ]
 
 
 def main():
@@ -89,10 +96,11 @@ def main():
 
     # get just parameter by full name
     if args["parameter"]:
-        parameter_value = ssm.client.get_parameter(Name=args["parameter"], WithDecryption=True)[
-            "Parameter"
-        ]["Value"]
+        parameter_value = ssm.get_parameter(name=args["parameter"])
         print(parameter_value)
+
+    if not any([args["list"], args["search"], args["parameter"]]):
+        print("Use --help for help")
 
 
 if __name__ == "__main__":
