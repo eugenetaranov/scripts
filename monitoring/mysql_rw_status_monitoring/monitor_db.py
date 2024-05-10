@@ -10,11 +10,11 @@ from loguru import logger
 
 def parseargs():
     p = ArgumentParser()
-    p.add_argument("--host", required=True, help="Host")
-    p.add_argument("--database", required=True, help="Database")
-    p.add_argument("--user", required=True, help="User")
-    p.add_argument("--password", required=True, help="Password")
-    p.add_argument("--table", required=True, help="Table name")
+    p.add_argument("-s", "--server", required=True, help="Host")
+    p.add_argument("-d", "--database", required=True, help="Database")
+    p.add_argument("-u", "--user", required=True, help="User")
+    p.add_argument("-p", "--password", required=True, help="Password")
+    p.add_argument("-t", "--table", required=True, help="Table name")
 
     return vars(p.parse_args())
 
@@ -30,10 +30,26 @@ class DatabaseConnector:
         self.user = user
         self.password = password
         self.database = database
-        self.connection = mysql.connector.connect(
-            host=host, user=user, password=password, database=database
-        )
-        self.cursor = self.connection.cursor()
+        self.timeout = 1
+        self.connection = None
+        self.cursor = None
+        self.connect()
+
+    def connect(self):
+        while True:
+            try:
+                self.connection = mysql.connector.connect(
+                    host=self.host,
+                    user=self.user,
+                    password=self.password,
+                    database=self.database,
+                    connection_timeout=self.timeout,
+                )
+                self.cursor = self.connection.cursor()
+                logger.info("Connected to the database")
+                break
+            except mysql.connector.Error as e:
+                sleep(self.timeout)
 
     def __del__(self):
         self.connection.close()
@@ -65,28 +81,46 @@ class DatabaseConnector:
 def main():
     args = parseargs()
     db = DatabaseConnector(
-        args["host"], args["user"], args["password"], args["database"]
+        host=args["server"],
+        user=args["user"],
+        password=args["password"],
+        database=args["database"],
     )
     table = args["table"]
 
     db.generate_table(table)
 
+    last_read_state = False
+    last_write_state = False
+
     while True:
         # check if table is readable
         try:
             db.read(table)
-            logger.info(f"Table {table} is readable")
+            if not last_read_state:
+                logger.info(f"Table {table} is now readable")
+                last_read_state = True
         except Exception as e:
-            logger.error(f"Table {table} is not readable: {e}")
+            if last_read_state:
+                logger.error(f"Table {table} is not readable: {e}")
+                last_read_state = False
+                last_write_state = False
+                db.connect()
 
         # check if table is writable
         try:
             data = generate_random_string()
 
             db.insert(table, data)
-            logger.info(f"Table {table} is writable")
+            if not last_write_state:
+                logger.info(f"Table {table} is now writable")
+                last_write_state = True
         except Exception as e:
-            logger.error(f"Table {table} is not writable: {e}")
+            if last_write_state:
+                logger.error(f"Table {table} is not writable: {e}")
+                last_read_state = False
+                last_write_state = False
+                db.connect()
 
         sleep(1)
 
