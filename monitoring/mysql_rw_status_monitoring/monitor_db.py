@@ -48,7 +48,7 @@ class DatabaseConnector:
                 self.cursor = self.connection.cursor()
                 logger.info("Connected to the database")
                 break
-            except mysql.connector.Error as e:
+            except:
                 sleep(self.timeout)
 
     def __del__(self):
@@ -76,7 +76,6 @@ class DatabaseConnector:
     def insert(self, table, data):
         self.cursor.execute(f"INSERT INTO {table} (text) VALUES ('{data}')")
         self.connection.commit()
-
 
 def main():
     args = parseargs()
