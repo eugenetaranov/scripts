@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 
 import boto3
 import botocore
@@ -16,7 +17,7 @@ def parseargs():
         "-c",
         "--cache",
         required=False,
-        default="~/.cache/ssm_search",
+        default=os.getenv("SSM_CACHE_PATH", "~/.cache/ssm_search"),
         help="Cache path, using by default ~/.cache/ssm_search",
     )
     p.add_argument("-p", "--parameter", required=False, help="Parameter name")
@@ -67,7 +68,6 @@ class SsmClient:
 def main():
     args = parseargs()
     ssm = SsmClient(config=BOTO3_CONFIG)
-
     cache = Cache(args["cache"])
 
     if args["reset"]:
