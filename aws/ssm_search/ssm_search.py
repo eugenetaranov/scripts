@@ -2,6 +2,7 @@
 
 import boto3
 import botocore
+from botocore.exceptions import ClientError
 from diskcache import Cache
 from argparse import ArgumentParser
 
@@ -89,7 +90,10 @@ def main():
         if args["search"]:
             for parameter_name in cache["all_parameters"]:
                 if all(f in parameter_name for f in args["search"]):
-                    print(parameter_name, ssm.get_parameter(name=parameter_name))
+                    try:
+                        print(parameter_name, ssm.get_parameter(name=parameter_name))
+                    except ssm.client.exceptions.ParameterNotFound:
+                        pass
 
     except KeyboardInterrupt:
         exit(1)
