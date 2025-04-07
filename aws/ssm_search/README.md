@@ -11,3 +11,9 @@ options:
   --search [SEARCH ...]
                         Search keywords
 ```
+
+### Installation
+```bash
+sudo curl -fsSL https://raw.githubusercontent.com/eugenetaranov/scripts/refs/heads/master/aws/ssm_search/ssm_search.py -o /usr/local/bin/ssm_search
+sudo chmod +x /usr/local/bin/ssm_search
+```
